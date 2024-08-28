@@ -6,7 +6,7 @@ class DiceGame:
     def __init__(self):
         self.user = User()
 
-    def game_menu(self):
+    def game_menu(self, username):
         while True:
             try:
                 print("<------------------------->")
@@ -22,7 +22,7 @@ class DiceGame:
 
                 if choice == 1:
                     self.user.clear_screen()
-                    self.play_game()
+                    self.play_game(username)
                 elif choice == 2:
                     self.user.clear_screen()
                     self.show_top_scores()
@@ -38,7 +38,9 @@ class DiceGame:
                 print("Please enter a valid choice from the menu.")
 
     def play_game(self, username):
-        print(f"Starting game as {username}\n")
+        print("========================================")
+        print(f"      Starting game as '{username}'")
+        print("========================================")
 
         self.user_score = 0
         self.cpu_score = 0
@@ -50,43 +52,48 @@ class DiceGame:
             self.user_point = 0
             self.cpu_point = 0
 
-            print("Dice rolling...")
+            print(" Dice rolling...\n")
             
             while self.round <= 3:
                 user_dice = random.randint(1, 6)
                 cpu_dice = random.randint(1, 6)
 
-                print(f"{username} rolled: {user_dice}")
-                print(f"CPU rolled: {cpu_dice}")
+                print("<-----------------------------")
+                print(f" {username} rolled: {user_dice}")
+                print(f" CPU rolled: {cpu_dice}")
+                print("----------------------------->")
 
                 if user_dice > cpu_dice:
-                    print(f"---{username} win this round.")
+                    print(f" {username} win this round.\n")
                     self.user_point += 1
                 elif user_dice < cpu_dice:
-                    print("---CPU win this round.")
+                    print(" CPU win this round.\n")
                     self.cpu_point += 1
                 else:
-                    print("*It's a tie.*")
+                    print(" It's a tie.")
 
                 self.round += 1
             
             while self.user_point == self.cpu_point:
-                print("\nTie-breaker round!")
+                self.user.clear_screen()
+                print("\n Tie-breaker round!")
                 user_dice = random.randint(1, 6)
                 cpu_dice = random.randint(1, 6)
 
-                print(f"{username} rolled: {user_dice}")
-                print(f"CPU rolled: {cpu_dice}")
+                print("<-----------------------------")
+                print(f" {username} rolled: {user_dice}")
+                print(f" CPU rolled: {cpu_dice}")
+                print("----------------------------->")
 
                 if user_dice > cpu_dice:
-                    print(f"---{username} win this round.")
+                    print(f" {username} win this round.")
                     self.user_point += 1
                 elif user_dice < cpu_dice:
-                    print("---CPU win this round.")
+                    print(" CPU win this round.")
                     self.cpu_point += 1
 
             if self.user_point > self.cpu_point:
-                print(f"\n{username} won this stage.")
+                print(f"\n{username} WON this stage.")
                 self.user_score += self.user_point + 3
                 self.stages_won += 1
 
@@ -97,11 +104,14 @@ class DiceGame:
                         choice = int(input("\nDo you wish to (1) continue to next stage or (2) quit the game?: "))
 
                         if choice == 1:
+                            self.user.clear_screen()
                             self.stage += 1
                             break
                         elif choice == 2:
-                            print(f"Game over. You won {self.stages_won} with a total points of {self.user_score}")
-                            self.user.save_score()
+                            print(f"\nGAME OVER. You won {self.stages_won} with a total points of {self.user_score}.")
+                            self.user.save_score(username, self.user_score, self.stages_won)
+                            input("\n>>> Press 'enter' to return.")
+                            self.user.clear_screen()
                             return
                         else:
                             print("Please enter a valid choice from the menu.")
@@ -110,8 +120,10 @@ class DiceGame:
                         print("Please enter a valid choice from the menu.")
 
             elif self.user_point < self.cpu_point:
-                print(f"\nYou lost this stage, {self.user.username}. It's game over.")
-                self.user.save_score()
+                print(f"\nGAME OVER. You lost this stage, {username}.")
+                self.user.save_score(username, self.user_score, self.stages_won)
+                input("\n>>> Press 'enter' to return.")
+                self.user.clear_screen()
                 return
 
     def show_top_scores(self):
@@ -121,6 +133,8 @@ class DiceGame:
 
             if not lines:
                 print("\nNo games played yet. Play a game to see top scores.")
+                input("\n>>> Press 'enter' to return.")
+                self.user.clear_screen()
                 return
             
             rankings = []
@@ -142,7 +156,13 @@ class DiceGame:
             print("Rank\tDate&Time\t\tPlayer\t\tScores\t\tWins")
             for rank, (date_time_1, username, user_score, stages_won) in enumerate(rankings[:10], 1):
                 print(f"{rank}\t{date_time_1}\t{username}\t\t{user_score}\t\t{stages_won}")
+
+            input("\n>>> Press 'enter' to return.")
+            self.user.clear_screen()
+            return
         
         except FileNotFoundError:
-            print("\nNo games played yet. Play a game to see top scores.")
+            print("\nNo games played yet. Play a game to see top scores.\n")
+            input("\n>>> Press 'enter' to return.")
+            self.user.clear_screen()
             return

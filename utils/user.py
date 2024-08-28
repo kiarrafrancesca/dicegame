@@ -12,20 +12,16 @@ class User:
         else:
             os.system('clear')
 
-    def press_return(self):
-        input("Press 'enter' to return.")
-        self.clear_screen()
-
     def validate_username(self, username):
         if len(username) < 4:
-            print("Username must be at least 4 characters long.")
+            print("\n Username must be at least 4 characters long.")
             return False
         else:
             try:
                 with open(self.userinfos, "r") as file:
                     for line in file:
                         if f"{username}" in line:
-                            print("Username already exists.")
+                            print("\n Username already exists.")
                             return False
             
             except FileNotFoundError:
@@ -34,36 +30,39 @@ class User:
 
     def validate_password(self, password):
         if len(password) < 8:
-            print("Password must be at least 8 characters long.")
+            print("\n Password must be at least 8 characters long.")
             return False
         return True
 
     def save_user(self, username, password):
         try:
             with open(self.userinfos, "a") as file:
-                file.write(f"{username}, {password}")
+                file.write(f"{username}, {password}\n")
         
-        except Exception as e:
-            print(f"Error saving user: {e}")
+        except FileNotFoundError:
+            return None
         
     def load_user(self, username, password):
         try:
             with open(self.userinfos, "r") as file:
                 for line in file:
-                    stored_username, stored_password = line.strip().split(", ")
-                    if username == stored_username and password == stored_password:
-                        return True
+                    parts = line.strip().split(", ", 1)
+                    if len(parts) == 2:
+                        stored_username, stored_password = parts
+                        if username == stored_username and password == stored_password:
+                            return True
+
+            return False
         
         except FileNotFoundError:
-            print("File not found.")
-        return False
+            return False
         
     def save_score(self, username, user_score, stages_won):
         date_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         try:
             with open(self.rankings, "a") as file:
-                file.write(f"{date_time} / {username}:     Score - {user_score},      Wins - {stages_won}")
+                file.write(f"{date_time} / {username}:     Score - {user_score},      Wins - {stages_won}\n")
         
         except Exception as e:
             print(f"Error saving... {e}")

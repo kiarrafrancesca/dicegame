@@ -1,9 +1,7 @@
-from utils.user_manager import UserManager
-
-usermanager = UserManager()
+from utils.user_manager import main_menu
 
 def Main():
-    usermanager.main_menu()
+    main_menu()
 
 if __name__ == "__main__":
     Main()
